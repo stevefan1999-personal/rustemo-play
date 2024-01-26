@@ -1,0 +1,21 @@
+[build]
+target = "x86_64-pc-windows-msvc"
+
+[unstable]
+build-std = ["core", "alloc", "std", "compiler_builtins"]
+build-std-features = ["compiler-builtins-mem"]
+
+[env]
+VCLTL_ROOT = "F:\\VC-LTL-5.0.9-Binary"
+
+[target.'cfg(all(target_arch = "x86_64", target_os = "windows", target_env = "msvc"))']
+rustflags = [
+    "-L", "F:\\YY-Thunks-1.0.9-Binary\\objs\\x64",
+    "-C", "link-args=YY_Thunks_for_WinXP.obj"
+]
+
+[target.'cfg(all(target_arch = "x86", target_os = "windows", target_env = "msvc"))']
+rustflags = [
+    "-L", "F:\\YY-Thunks-1.0.9-Binary\\objs\\x86",
+    "-C", "link-args=YY_Thunks_for_Win2K.obj"
+]

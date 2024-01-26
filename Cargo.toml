@@ -1,0 +1,42 @@
+cargo-features = ["trim-paths", "profile-rustflags"]
+
+[package]
+name = "rustemo-play"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+anyhow = "1.0.79"
+rustemo-compiler = "0.5.0"
+
+[dependencies]
+anyhow = "1.0.79"
+colored = "2.1.0"
+fancy-regex = "0.13.0"
+once_cell = "1.19.0"
+regex = { version = "1.10.3", default-features = false, features = ["unicode-perl", "unicode-gencat", "unicode-bool"] }
+rustemo = "0.5.0"
+
+[profile.release]
+incremental = true
+lto = "thin"
+trim-paths = "all"
+rustflags = ["-Zlocation-detail=none"]
+
+[profile.min-size-release]
+inherits = "release"
+codegen-units = 1
+opt-level = "s"
+
+[profile.release-strip]
+inherits = "release"
+lto = "fat"
+strip = "symbols"
+
+[profile.min-size-release-strip]
+inherits = "min-size-release"
+lto = "fat"
+strip = "symbols"
+
