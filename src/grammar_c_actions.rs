@@ -14,6 +14,10 @@ pub type Identifier = String;
 pub fn identifier(_ctx: &Ctx, token: Token) -> Identifier {
     token.value.into()
 }
+pub type StringLiteral = String;
+pub fn string_literal(_ctx: &Ctx, token: Token) -> StringLiteral {
+    token.value.into()
+}
 #[derive(Debug, Clone)]
 pub struct TranslationUnitC2 {
     pub translation_unit: Box<TranslationUnit>,
@@ -59,111 +63,92 @@ pub fn external_declaration_declaration(
 }
 #[derive(Debug, Clone)]
 pub struct FunctionDefinition {
-    pub declaration_specifiers: DeclarationSpecifiers,
+    pub declaration_specifier1: DeclarationSpecifier1,
     pub declarator: Declarator,
-    pub declaration_list_opt: DeclarationListOpt,
+    pub declaration0: Declaration0,
     pub compound_statement: CompoundStatement,
 }
 pub fn function_definition_c1(
     _ctx: &Ctx,
-    declaration_specifiers: DeclarationSpecifiers,
+    declaration_specifier1: DeclarationSpecifier1,
     declarator: Declarator,
-    declaration_list_opt: DeclarationListOpt,
+    declaration0: Declaration0,
     compound_statement: CompoundStatement,
 ) -> FunctionDefinition {
     FunctionDefinition {
-        declaration_specifiers,
+        declaration_specifier1,
         declarator,
-        declaration_list_opt,
+        declaration0,
         compound_statement,
     }
 }
-pub type DeclarationListOpt = Option<DeclarationList>;
-pub fn declaration_list_opt_declaration_list(
+pub type DeclarationSpecifier1 = Vec<DeclarationSpecifier>;
+pub fn declaration_specifier1_c1(
     _ctx: &Ctx,
-    declaration_list: DeclarationList,
-) -> DeclarationListOpt {
-    Some(declaration_list)
+    mut declaration_specifier1: DeclarationSpecifier1,
+    declaration_specifier: DeclarationSpecifier,
+) -> DeclarationSpecifier1 {
+    declaration_specifier1.push(declaration_specifier);
+    declaration_specifier1
 }
-pub fn declaration_list_opt_empty(_ctx: &Ctx) -> DeclarationListOpt {
+pub fn declaration_specifier1_declaration_specifier(
+    _ctx: &Ctx,
+    declaration_specifier: DeclarationSpecifier,
+) -> DeclarationSpecifier1 {
+    vec![declaration_specifier]
+}
+pub type Declaration1 = Vec<Declaration>;
+pub fn declaration1_c1(
+    _ctx: &Ctx,
+    mut declaration1: Declaration1,
+    declaration: Declaration,
+) -> Declaration1 {
+    declaration1.push(declaration);
+    declaration1
+}
+pub fn declaration1_declaration(_ctx: &Ctx, declaration: Declaration) -> Declaration1 {
+    vec![declaration]
+}
+pub type Declaration0 = Option<Declaration1>;
+pub fn declaration0_declaration1(
+    _ctx: &Ctx,
+    declaration1: Declaration1,
+) -> Declaration0 {
+    Some(declaration1)
+}
+pub fn declaration0_empty(_ctx: &Ctx) -> Declaration0 {
     None
 }
 #[derive(Debug, Clone)]
-pub struct DeclarationSpecifiersC1 {
-    pub storage_class_specifier: StorageClassSpecifier,
-    pub declaration_specifiers_opt: DeclarationSpecifiersOpt,
+pub enum DeclarationSpecifier {
+    StorageClassSpecifier(StorageClassSpecifier),
+    TypeSpecifier(TypeSpecifier),
+    TypeQualifier(TypeQualifier),
+    FunctionSpecifier(FunctionSpecifier),
 }
-#[derive(Debug, Clone)]
-pub struct DeclarationSpecifiersC2 {
-    pub type_specifier: TypeSpecifier,
-    pub declaration_specifiers_opt: DeclarationSpecifiersOpt,
-}
-#[derive(Debug, Clone)]
-pub struct DeclarationSpecifiersC3 {
-    pub type_qualifier: TypeQualifier,
-    pub declaration_specifiers_opt: DeclarationSpecifiersOpt,
-}
-#[derive(Debug, Clone)]
-pub struct DeclarationSpecifiersC4 {
-    pub function_specifier: FunctionSpecifier,
-    pub declaration_specifiers_opt: DeclarationSpecifiersOpt,
-}
-#[derive(Debug, Clone)]
-pub enum DeclarationSpecifiers {
-    C1(DeclarationSpecifiersC1),
-    C2(DeclarationSpecifiersC2),
-    C3(DeclarationSpecifiersC3),
-    C4(DeclarationSpecifiersC4),
-}
-pub fn declaration_specifiers_c1(
+pub fn declaration_specifier_storage_class_specifier(
     _ctx: &Ctx,
     storage_class_specifier: StorageClassSpecifier,
-    declaration_specifiers_opt: DeclarationSpecifiersOpt,
-) -> DeclarationSpecifiers {
-    DeclarationSpecifiers::C1(DeclarationSpecifiersC1 {
-        storage_class_specifier,
-        declaration_specifiers_opt,
-    })
+) -> DeclarationSpecifier {
+    DeclarationSpecifier::StorageClassSpecifier(storage_class_specifier)
 }
-pub fn declaration_specifiers_c2(
+pub fn declaration_specifier_type_specifier(
     _ctx: &Ctx,
     type_specifier: TypeSpecifier,
-    declaration_specifiers_opt: DeclarationSpecifiersOpt,
-) -> DeclarationSpecifiers {
-    DeclarationSpecifiers::C2(DeclarationSpecifiersC2 {
-        type_specifier,
-        declaration_specifiers_opt,
-    })
+) -> DeclarationSpecifier {
+    DeclarationSpecifier::TypeSpecifier(type_specifier)
 }
-pub fn declaration_specifiers_c3(
+pub fn declaration_specifier_type_qualifier(
     _ctx: &Ctx,
     type_qualifier: TypeQualifier,
-    declaration_specifiers_opt: DeclarationSpecifiersOpt,
-) -> DeclarationSpecifiers {
-    DeclarationSpecifiers::C3(DeclarationSpecifiersC3 {
-        type_qualifier,
-        declaration_specifiers_opt,
-    })
+) -> DeclarationSpecifier {
+    DeclarationSpecifier::TypeQualifier(type_qualifier)
 }
-pub fn declaration_specifiers_c4(
+pub fn declaration_specifier_function_specifier(
     _ctx: &Ctx,
     function_specifier: FunctionSpecifier,
-    declaration_specifiers_opt: DeclarationSpecifiersOpt,
-) -> DeclarationSpecifiers {
-    DeclarationSpecifiers::C4(DeclarationSpecifiersC4 {
-        function_specifier,
-        declaration_specifiers_opt,
-    })
-}
-pub type DeclarationSpecifiersOpt = Option<Box<DeclarationSpecifiers>>;
-pub fn declaration_specifiers_opt_declaration_specifiers(
-    _ctx: &Ctx,
-    declaration_specifiers: DeclarationSpecifiers,
-) -> DeclarationSpecifiersOpt {
-    Some(Box::new(declaration_specifiers))
-}
-pub fn declaration_specifiers_opt_empty(_ctx: &Ctx) -> DeclarationSpecifiersOpt {
-    None
+) -> DeclarationSpecifier {
+    DeclarationSpecifier::FunctionSpecifier(function_specifier)
 }
 #[derive(Debug, Clone)]
 pub enum StorageClassSpecifier {
@@ -260,7 +245,7 @@ pub fn type_specifier_typedef_name(
 pub struct StructOrUnionSpecifierC1 {
     pub struct_or_union: StructOrUnion,
     pub identifier_opt: IdentifierOpt,
-    pub struct_declaration_list: StructDeclarationList,
+    pub struct_declaration1: StructDeclaration1,
 }
 #[derive(Debug, Clone)]
 pub struct StructOrUnionSpecifierC2 {
@@ -276,12 +261,12 @@ pub fn struct_or_union_specifier_c1(
     _ctx: &Ctx,
     struct_or_union: StructOrUnion,
     identifier_opt: IdentifierOpt,
-    struct_declaration_list: StructDeclarationList,
+    struct_declaration1: StructDeclaration1,
 ) -> StructOrUnionSpecifier {
     StructOrUnionSpecifier::C1(StructOrUnionSpecifierC1 {
         struct_or_union,
         identifier_opt,
-        struct_declaration_list,
+        struct_declaration1,
     })
 }
 pub fn struct_or_union_specifier_c2(
@@ -301,6 +286,21 @@ pub fn identifier_opt_identifier(_ctx: &Ctx, identifier: Identifier) -> Identifi
 pub fn identifier_opt_empty(_ctx: &Ctx) -> IdentifierOpt {
     None
 }
+pub type StructDeclaration1 = Vec<StructDeclaration>;
+pub fn struct_declaration1_c1(
+    _ctx: &Ctx,
+    mut struct_declaration1: StructDeclaration1,
+    struct_declaration: StructDeclaration,
+) -> StructDeclaration1 {
+    struct_declaration1.push(struct_declaration);
+    struct_declaration1
+}
+pub fn struct_declaration1_struct_declaration(
+    _ctx: &Ctx,
+    struct_declaration: StructDeclaration,
+) -> StructDeclaration1 {
+    vec![struct_declaration]
+}
 #[derive(Debug, Clone)]
 pub enum StructOrUnion {
     Struct,
@@ -313,90 +313,51 @@ pub fn struct_or_union_union(_ctx: &Ctx) -> StructOrUnion {
     StructOrUnion::Union
 }
 #[derive(Debug, Clone)]
-pub struct StructDeclarationListC2 {
-    pub struct_declaration_list: Box<StructDeclarationList>,
-    pub struct_declaration: StructDeclaration,
-}
-#[derive(Debug, Clone)]
-pub enum StructDeclarationList {
-    StructDeclaration(StructDeclaration),
-    C2(StructDeclarationListC2),
-}
-pub fn struct_declaration_list_struct_declaration(
-    _ctx: &Ctx,
-    struct_declaration: StructDeclaration,
-) -> StructDeclarationList {
-    StructDeclarationList::StructDeclaration(struct_declaration)
-}
-pub fn struct_declaration_list_c2(
-    _ctx: &Ctx,
-    struct_declaration_list: StructDeclarationList,
-    struct_declaration: StructDeclaration,
-) -> StructDeclarationList {
-    StructDeclarationList::C2(StructDeclarationListC2 {
-        struct_declaration_list: Box::new(struct_declaration_list),
-        struct_declaration,
-    })
-}
-#[derive(Debug, Clone)]
 pub struct StructDeclaration {
-    pub specifier_qualifier_list: SpecifierQualifierList,
+    pub specifier_qualifier_kind1: SpecifierQualifierKind1,
     pub struct_declarator_list: StructDeclaratorList,
 }
 pub fn struct_declaration_c1(
     _ctx: &Ctx,
-    specifier_qualifier_list: SpecifierQualifierList,
+    specifier_qualifier_kind1: SpecifierQualifierKind1,
     struct_declarator_list: StructDeclaratorList,
 ) -> StructDeclaration {
     StructDeclaration {
-        specifier_qualifier_list,
+        specifier_qualifier_kind1,
         struct_declarator_list,
     }
 }
-#[derive(Debug, Clone)]
-pub struct SpecifierQualifierListC1 {
-    pub type_specifier: Box<TypeSpecifier>,
-    pub specifier_qualifier_list_opt: SpecifierQualifierListOpt,
+pub type SpecifierQualifierKind1 = Vec<SpecifierQualifierKind>;
+pub fn specifier_qualifier_kind1_c1(
+    _ctx: &Ctx,
+    mut specifier_qualifier_kind1: SpecifierQualifierKind1,
+    specifier_qualifier_kind: SpecifierQualifierKind,
+) -> SpecifierQualifierKind1 {
+    specifier_qualifier_kind1.push(specifier_qualifier_kind);
+    specifier_qualifier_kind1
+}
+pub fn specifier_qualifier_kind1_specifier_qualifier_kind(
+    _ctx: &Ctx,
+    specifier_qualifier_kind: SpecifierQualifierKind,
+) -> SpecifierQualifierKind1 {
+    vec![specifier_qualifier_kind]
 }
 #[derive(Debug, Clone)]
-pub struct SpecifierQualifierListC2 {
-    pub type_qualifier: TypeQualifier,
-    pub specifier_qualifier_list_opt: SpecifierQualifierListOpt,
+pub enum SpecifierQualifierKind {
+    TypeSpecifier(Box<TypeSpecifier>),
+    TypeQualifier(TypeQualifier),
 }
-#[derive(Debug, Clone)]
-pub enum SpecifierQualifierList {
-    C1(SpecifierQualifierListC1),
-    C2(SpecifierQualifierListC2),
-}
-pub fn specifier_qualifier_list_c1(
+pub fn specifier_qualifier_kind_type_specifier(
     _ctx: &Ctx,
     type_specifier: TypeSpecifier,
-    specifier_qualifier_list_opt: SpecifierQualifierListOpt,
-) -> SpecifierQualifierList {
-    SpecifierQualifierList::C1(SpecifierQualifierListC1 {
-        type_specifier: Box::new(type_specifier),
-        specifier_qualifier_list_opt,
-    })
+) -> SpecifierQualifierKind {
+    SpecifierQualifierKind::TypeSpecifier(Box::new(type_specifier))
 }
-pub fn specifier_qualifier_list_c2(
+pub fn specifier_qualifier_kind_type_qualifier(
     _ctx: &Ctx,
     type_qualifier: TypeQualifier,
-    specifier_qualifier_list_opt: SpecifierQualifierListOpt,
-) -> SpecifierQualifierList {
-    SpecifierQualifierList::C2(SpecifierQualifierListC2 {
-        type_qualifier,
-        specifier_qualifier_list_opt,
-    })
-}
-pub type SpecifierQualifierListOpt = Option<Box<SpecifierQualifierList>>;
-pub fn specifier_qualifier_list_opt_specifier_qualifier_list(
-    _ctx: &Ctx,
-    specifier_qualifier_list: SpecifierQualifierList,
-) -> SpecifierQualifierListOpt {
-    Some(Box::new(specifier_qualifier_list))
-}
-pub fn specifier_qualifier_list_opt_empty(_ctx: &Ctx) -> SpecifierQualifierListOpt {
-    None
+) -> SpecifierQualifierKind {
+    SpecifierQualifierKind::TypeQualifier(type_qualifier)
 }
 #[derive(Debug, Clone)]
 pub enum TypeQualifier {
@@ -414,30 +375,30 @@ pub fn type_qualifier_volatile(_ctx: &Ctx) -> TypeQualifier {
     TypeQualifier::Volatile
 }
 #[derive(Debug, Clone)]
-pub struct StructDeclaratorListC2 {
+pub struct StructDeclaratorListC1 {
     pub struct_declarator_list: Box<StructDeclaratorList>,
     pub struct_declarator: StructDeclarator,
 }
 #[derive(Debug, Clone)]
 pub enum StructDeclaratorList {
+    C1(StructDeclaratorListC1),
     StructDeclarator(StructDeclarator),
-    C2(StructDeclaratorListC2),
+}
+pub fn struct_declarator_list_c1(
+    _ctx: &Ctx,
+    struct_declarator_list: StructDeclaratorList,
+    struct_declarator: StructDeclarator,
+) -> StructDeclaratorList {
+    StructDeclaratorList::C1(StructDeclaratorListC1 {
+        struct_declarator_list: Box::new(struct_declarator_list),
+        struct_declarator,
+    })
 }
 pub fn struct_declarator_list_struct_declarator(
     _ctx: &Ctx,
     struct_declarator: StructDeclarator,
 ) -> StructDeclaratorList {
     StructDeclaratorList::StructDeclarator(struct_declarator)
-}
-pub fn struct_declarator_list_c2(
-    _ctx: &Ctx,
-    struct_declarator_list: StructDeclaratorList,
-    struct_declarator: StructDeclarator,
-) -> StructDeclaratorList {
-    StructDeclaratorList::C2(StructDeclaratorListC2 {
-        struct_declarator_list: Box::new(struct_declarator_list),
-        struct_declarator,
-    })
 }
 #[derive(Debug, Clone)]
 pub struct StructDeclaratorC2 {
@@ -496,88 +457,74 @@ pub fn pointer_opt_empty(_ctx: &Ctx) -> PointerOpt {
 }
 #[derive(Debug, Clone)]
 pub struct PointerC2 {
-    pub type_qualifier_list_opt: TypeQualifierListOpt,
+    pub type_qualifier0: TypeQualifier0,
     pub pointer: Box<Pointer>,
 }
 #[derive(Debug, Clone)]
 pub enum Pointer {
-    TypeQualifierListOpt(TypeQualifierListOpt),
+    TypeQualifier0(TypeQualifier0),
     C2(PointerC2),
 }
-pub fn pointer_type_qualifier_list_opt(
-    _ctx: &Ctx,
-    type_qualifier_list_opt: TypeQualifierListOpt,
-) -> Pointer {
-    Pointer::TypeQualifierListOpt(type_qualifier_list_opt)
+pub fn pointer_type_qualifier0(_ctx: &Ctx, type_qualifier0: TypeQualifier0) -> Pointer {
+    Pointer::TypeQualifier0(type_qualifier0)
 }
 pub fn pointer_c2(
     _ctx: &Ctx,
-    type_qualifier_list_opt: TypeQualifierListOpt,
+    type_qualifier0: TypeQualifier0,
     pointer: Pointer,
 ) -> Pointer {
     Pointer::C2(PointerC2 {
-        type_qualifier_list_opt,
+        type_qualifier0,
         pointer: Box::new(pointer),
     })
 }
-pub type TypeQualifierListOpt = Option<TypeQualifierList>;
-pub fn type_qualifier_list_opt_type_qualifier_list(
+pub type TypeQualifier1 = Vec<TypeQualifier>;
+pub fn type_qualifier1_c1(
     _ctx: &Ctx,
-    type_qualifier_list: TypeQualifierList,
-) -> TypeQualifierListOpt {
-    Some(type_qualifier_list)
+    mut type_qualifier1: TypeQualifier1,
+    type_qualifier: TypeQualifier,
+) -> TypeQualifier1 {
+    type_qualifier1.push(type_qualifier);
+    type_qualifier1
 }
-pub fn type_qualifier_list_opt_empty(_ctx: &Ctx) -> TypeQualifierListOpt {
+pub fn type_qualifier1_type_qualifier(
+    _ctx: &Ctx,
+    type_qualifier: TypeQualifier,
+) -> TypeQualifier1 {
+    vec![type_qualifier]
+}
+pub type TypeQualifier0 = Option<TypeQualifier1>;
+pub fn type_qualifier0_type_qualifier1(
+    _ctx: &Ctx,
+    type_qualifier1: TypeQualifier1,
+) -> TypeQualifier0 {
+    Some(type_qualifier1)
+}
+pub fn type_qualifier0_empty(_ctx: &Ctx) -> TypeQualifier0 {
     None
-}
-#[derive(Debug, Clone)]
-pub struct TypeQualifierListC2 {
-    pub type_qualifier_list: Box<TypeQualifierList>,
-    pub type_qualifier: TypeQualifier,
-}
-#[derive(Debug, Clone)]
-pub enum TypeQualifierList {
-    TypeQualifier(TypeQualifier),
-    C2(TypeQualifierListC2),
-}
-pub fn type_qualifier_list_type_qualifier(
-    _ctx: &Ctx,
-    type_qualifier: TypeQualifier,
-) -> TypeQualifierList {
-    TypeQualifierList::TypeQualifier(type_qualifier)
-}
-pub fn type_qualifier_list_c2(
-    _ctx: &Ctx,
-    type_qualifier_list: TypeQualifierList,
-    type_qualifier: TypeQualifier,
-) -> TypeQualifierList {
-    TypeQualifierList::C2(TypeQualifierListC2 {
-        type_qualifier_list: Box::new(type_qualifier_list),
-        type_qualifier,
-    })
 }
 #[derive(Debug, Clone)]
 pub struct DirectDeclaratorC3 {
     pub direct_declarator: Box<DirectDeclarator>,
-    pub type_qualifier_list_opt: TypeQualifierListOpt,
+    pub type_qualifier0: TypeQualifier0,
     pub assignment_expression_opt: AssignmentExpressionOpt,
 }
 #[derive(Debug, Clone)]
 pub struct DirectDeclaratorC4 {
     pub direct_declarator: Box<DirectDeclarator>,
-    pub type_qualifier_list_opt: TypeQualifierListOpt,
+    pub type_qualifier0: TypeQualifier0,
     pub assignment_expression: AssignmentExpression,
 }
 #[derive(Debug, Clone)]
 pub struct DirectDeclaratorC5 {
     pub direct_declarator: Box<DirectDeclarator>,
-    pub type_qualifier_list: TypeQualifierList,
+    pub type_qualifier1: TypeQualifier1,
     pub assignment_expression: AssignmentExpression,
 }
 #[derive(Debug, Clone)]
 pub struct DirectDeclaratorC6 {
     pub direct_declarator: Box<DirectDeclarator>,
-    pub type_qualifier_list_opt: TypeQualifierListOpt,
+    pub type_qualifier0: TypeQualifier0,
 }
 #[derive(Debug, Clone)]
 pub struct DirectDeclaratorC7 {
@@ -615,47 +562,47 @@ pub fn direct_declarator_declarator(
 pub fn direct_declarator_c3(
     _ctx: &Ctx,
     direct_declarator: DirectDeclarator,
-    type_qualifier_list_opt: TypeQualifierListOpt,
+    type_qualifier0: TypeQualifier0,
     assignment_expression_opt: AssignmentExpressionOpt,
 ) -> DirectDeclarator {
     DirectDeclarator::C3(DirectDeclaratorC3 {
         direct_declarator: Box::new(direct_declarator),
-        type_qualifier_list_opt,
+        type_qualifier0,
         assignment_expression_opt,
     })
 }
 pub fn direct_declarator_c4(
     _ctx: &Ctx,
     direct_declarator: DirectDeclarator,
-    type_qualifier_list_opt: TypeQualifierListOpt,
+    type_qualifier0: TypeQualifier0,
     assignment_expression: AssignmentExpression,
 ) -> DirectDeclarator {
     DirectDeclarator::C4(DirectDeclaratorC4 {
         direct_declarator: Box::new(direct_declarator),
-        type_qualifier_list_opt,
+        type_qualifier0,
         assignment_expression,
     })
 }
 pub fn direct_declarator_c5(
     _ctx: &Ctx,
     direct_declarator: DirectDeclarator,
-    type_qualifier_list: TypeQualifierList,
+    type_qualifier1: TypeQualifier1,
     assignment_expression: AssignmentExpression,
 ) -> DirectDeclarator {
     DirectDeclarator::C5(DirectDeclaratorC5 {
         direct_declarator: Box::new(direct_declarator),
-        type_qualifier_list,
+        type_qualifier1,
         assignment_expression,
     })
 }
 pub fn direct_declarator_c6(
     _ctx: &Ctx,
     direct_declarator: DirectDeclarator,
-    type_qualifier_list_opt: TypeQualifierListOpt,
+    type_qualifier0: TypeQualifier0,
 ) -> DirectDeclarator {
     DirectDeclarator::C6(DirectDeclaratorC6 {
         direct_declarator: Box::new(direct_declarator),
-        type_qualifier_list_opt,
+        type_qualifier0,
     })
 }
 pub fn direct_declarator_c7(
@@ -699,25 +646,112 @@ pub fn identifier_list_opt_empty(_ctx: &Ctx) -> IdentifierListOpt {
     None
 }
 #[derive(Debug, Clone)]
-pub struct AssignmentExpression {
-    pub left: Expression,
-    pub right: Expression,
+pub struct CommaExpression {
+    pub left: Box<Expression>,
+    pub right: Box<Expression>,
 }
-pub fn assignment_expression_c1(
+#[derive(Debug, Clone)]
+pub enum Expression {
+    CommaExpression(CommaExpression),
+    AssignmentExpression(Box<AssignmentExpression>),
+}
+pub fn expression_comma_expression(
     _ctx: &Ctx,
     left: Expression,
     right: Expression,
+) -> Expression {
+    Expression::CommaExpression(CommaExpression {
+        left: Box::new(left),
+        right: Box::new(right),
+    })
+}
+pub fn expression_assignment_expression(
+    _ctx: &Ctx,
+    assignment_expression: AssignmentExpression,
+) -> Expression {
+    Expression::AssignmentExpression(Box::new(assignment_expression))
+}
+#[derive(Debug, Clone)]
+pub enum AssignmentOperators {
+    Equal,
+    PlusEqual,
+    DashEqual,
+    StarEqual,
+    SlashEqual,
+    PercentEqual,
+    DoubleLeftEqual,
+    DoubleRightEqual,
+    AmpersandEqual,
+    CaretEqual,
+    VerticalBarEqual,
+}
+pub fn assignment_operators_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::Equal
+}
+pub fn assignment_operators_plus_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::PlusEqual
+}
+pub fn assignment_operators_dash_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::DashEqual
+}
+pub fn assignment_operators_star_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::StarEqual
+}
+pub fn assignment_operators_slash_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::SlashEqual
+}
+pub fn assignment_operators_percent_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::PercentEqual
+}
+pub fn assignment_operators_double_left_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::DoubleLeftEqual
+}
+pub fn assignment_operators_double_right_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::DoubleRightEqual
+}
+pub fn assignment_operators_ampersand_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::AmpersandEqual
+}
+pub fn assignment_operators_caret_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::CaretEqual
+}
+pub fn assignment_operators_vertical_bar_equal(_ctx: &Ctx) -> AssignmentOperators {
+    AssignmentOperators::VerticalBarEqual
+}
+#[derive(Debug, Clone)]
+pub struct AssignmentExpressionC2 {
+    pub left: UnaryExpression,
+    pub assignment_operators: AssignmentOperators,
+    pub right: Expression,
+}
+#[derive(Debug, Clone)]
+pub enum AssignmentExpression {
+    ConditionalExpression(ConditionalExpression),
+    C2(AssignmentExpressionC2),
+}
+pub fn assignment_expression_conditional_expression(
+    _ctx: &Ctx,
+    conditional_expression: ConditionalExpression,
 ) -> AssignmentExpression {
-    AssignmentExpression {
+    AssignmentExpression::ConditionalExpression(conditional_expression)
+}
+pub fn assignment_expression_c2(
+    _ctx: &Ctx,
+    left: UnaryExpression,
+    assignment_operators: AssignmentOperators,
+    right: Expression,
+) -> AssignmentExpression {
+    AssignmentExpression::C2(AssignmentExpressionC2 {
         left,
+        assignment_operators,
         right,
-    }
+    })
 }
 #[derive(Debug, Clone)]
 pub struct ConditionalExpressionC2 {
-    pub condition: ArithmeticExpression,
-    pub branch_true: Box<Expression>,
-    pub branch_false: Box<ConditionalExpression>,
+    pub condition: Expression,
+    pub branch_true: Expression,
+    pub branch_false: Expression,
 }
 #[derive(Debug, Clone)]
 pub enum ConditionalExpression {
@@ -732,108 +766,109 @@ pub fn conditional_expression_arithmetic_expression(
 }
 pub fn conditional_expression_c2(
     _ctx: &Ctx,
-    condition: ArithmeticExpression,
+    condition: Expression,
     branch_true: Expression,
-    branch_false: ConditionalExpression,
+    branch_false: Expression,
 ) -> ConditionalExpression {
     ConditionalExpression::C2(ConditionalExpressionC2 {
         condition,
-        branch_true: Box::new(branch_true),
-        branch_false: Box::new(branch_false),
+        branch_true,
+        branch_false,
     })
 }
 #[derive(Debug, Clone)]
 pub struct LogicalOrExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct LogicalAndExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct BitwiseOrExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct BitwiseExclusiveOrExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct BitwiseAndExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct LogicalEqualExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct LogicalNotEqualExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct LessThanExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct LessThanOrEqualExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct GreaterThanExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct GreaterThanOrEqualExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct BitwiseLeftShiftExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct BitwiseRightShiftExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct AdditionExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct SubtractionExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct MultiplyExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct DivisionExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub struct ModuloExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
+    pub left: Expression,
+    pub right: Expression,
 }
 #[derive(Debug, Clone)]
 pub enum ArithmeticExpression {
+    UnaryExpression(UnaryExpression),
     LogicalOrExpression(LogicalOrExpression),
     LogicalAndExpression(LogicalAndExpression),
     BitwiseOrExpression(BitwiseOrExpression),
@@ -853,15 +888,18 @@ pub enum ArithmeticExpression {
     DivisionExpression(DivisionExpression),
     ModuloExpression(ModuloExpression),
 }
+pub fn arithmetic_expression_unary_expression(
+    _ctx: &Ctx,
+    unary_expression: UnaryExpression,
+) -> ArithmeticExpression {
+    ArithmeticExpression::UnaryExpression(unary_expression)
+}
 pub fn arithmetic_expression_logical_or_expression(
     _ctx: &Ctx,
     left: Expression,
     right: Expression,
 ) -> ArithmeticExpression {
-    ArithmeticExpression::LogicalOrExpression(LogicalOrExpression {
-        left: Box::new(left),
-        right: Box::new(right),
-    })
+    ArithmeticExpression::LogicalOrExpression(LogicalOrExpression { left, right })
 }
 pub fn arithmetic_expression_logical_and_expression(
     _ctx: &Ctx,
@@ -869,8 +907,8 @@ pub fn arithmetic_expression_logical_and_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::LogicalAndExpression(LogicalAndExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_bitwise_or_expression(
@@ -878,10 +916,7 @@ pub fn arithmetic_expression_bitwise_or_expression(
     left: Expression,
     right: Expression,
 ) -> ArithmeticExpression {
-    ArithmeticExpression::BitwiseOrExpression(BitwiseOrExpression {
-        left: Box::new(left),
-        right: Box::new(right),
-    })
+    ArithmeticExpression::BitwiseOrExpression(BitwiseOrExpression { left, right })
 }
 pub fn arithmetic_expression_bitwise_exclusive_or_expression(
     _ctx: &Ctx,
@@ -889,8 +924,8 @@ pub fn arithmetic_expression_bitwise_exclusive_or_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::BitwiseExclusiveOrExpression(BitwiseExclusiveOrExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_bitwise_and_expression(
@@ -899,8 +934,8 @@ pub fn arithmetic_expression_bitwise_and_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::BitwiseAndExpression(BitwiseAndExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_logical_equal_expression(
@@ -909,8 +944,8 @@ pub fn arithmetic_expression_logical_equal_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::LogicalEqualExpression(LogicalEqualExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_logical_not_equal_expression(
@@ -919,8 +954,8 @@ pub fn arithmetic_expression_logical_not_equal_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::LogicalNotEqualExpression(LogicalNotEqualExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_less_than_expression(
@@ -928,10 +963,7 @@ pub fn arithmetic_expression_less_than_expression(
     left: Expression,
     right: Expression,
 ) -> ArithmeticExpression {
-    ArithmeticExpression::LessThanExpression(LessThanExpression {
-        left: Box::new(left),
-        right: Box::new(right),
-    })
+    ArithmeticExpression::LessThanExpression(LessThanExpression { left, right })
 }
 pub fn arithmetic_expression_less_than_or_equal_expression(
     _ctx: &Ctx,
@@ -939,8 +971,8 @@ pub fn arithmetic_expression_less_than_or_equal_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::LessThanOrEqualExpression(LessThanOrEqualExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_greater_than_expression(
@@ -949,8 +981,8 @@ pub fn arithmetic_expression_greater_than_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::GreaterThanExpression(GreaterThanExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_greater_than_or_equal_expression(
@@ -959,8 +991,8 @@ pub fn arithmetic_expression_greater_than_or_equal_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::GreaterThanOrEqualExpression(GreaterThanOrEqualExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_bitwise_left_shift_expression(
@@ -969,8 +1001,8 @@ pub fn arithmetic_expression_bitwise_left_shift_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::BitwiseLeftShiftExpression(BitwiseLeftShiftExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_bitwise_right_shift_expression(
@@ -979,8 +1011,8 @@ pub fn arithmetic_expression_bitwise_right_shift_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::BitwiseRightShiftExpression(BitwiseRightShiftExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_addition_expression(
@@ -988,10 +1020,7 @@ pub fn arithmetic_expression_addition_expression(
     left: Expression,
     right: Expression,
 ) -> ArithmeticExpression {
-    ArithmeticExpression::AdditionExpression(AdditionExpression {
-        left: Box::new(left),
-        right: Box::new(right),
-    })
+    ArithmeticExpression::AdditionExpression(AdditionExpression { left, right })
 }
 pub fn arithmetic_expression_subtraction_expression(
     _ctx: &Ctx,
@@ -999,8 +1028,8 @@ pub fn arithmetic_expression_subtraction_expression(
     right: Expression,
 ) -> ArithmeticExpression {
     ArithmeticExpression::SubtractionExpression(SubtractionExpression {
-        left: Box::new(left),
-        right: Box::new(right),
+        left,
+        right,
     })
 }
 pub fn arithmetic_expression_multiply_expression(
@@ -1008,76 +1037,116 @@ pub fn arithmetic_expression_multiply_expression(
     left: Expression,
     right: Expression,
 ) -> ArithmeticExpression {
-    ArithmeticExpression::MultiplyExpression(MultiplyExpression {
-        left: Box::new(left),
-        right: Box::new(right),
-    })
+    ArithmeticExpression::MultiplyExpression(MultiplyExpression { left, right })
 }
 pub fn arithmetic_expression_division_expression(
     _ctx: &Ctx,
     left: Expression,
     right: Expression,
 ) -> ArithmeticExpression {
-    ArithmeticExpression::DivisionExpression(DivisionExpression {
-        left: Box::new(left),
-        right: Box::new(right),
-    })
+    ArithmeticExpression::DivisionExpression(DivisionExpression { left, right })
 }
 pub fn arithmetic_expression_modulo_expression(
     _ctx: &Ctx,
     left: Expression,
     right: Expression,
 ) -> ArithmeticExpression {
-    ArithmeticExpression::ModuloExpression(ModuloExpression {
-        left: Box::new(left),
-        right: Box::new(right),
-    })
+    ArithmeticExpression::ModuloExpression(ModuloExpression { left, right })
+}
+pub type TypeCast = TypeName;
+pub fn type_cast_type_name(_ctx: &Ctx, type_name: TypeName) -> TypeCast {
+    type_name
 }
 #[derive(Debug, Clone)]
-pub struct CastExpressionC2 {
-    pub type_name: TypeName,
-    pub cast_expression: Box<CastExpression>,
+pub struct LogicalNotExpression {
+    pub type_cast_opt: TypeCastOpt,
+    pub unary_expression: Box<UnaryExpression>,
 }
 #[derive(Debug, Clone)]
-pub enum CastExpression {
-    UnaryExpression(Box<UnaryExpression>),
-    C2(CastExpressionC2),
+pub struct BitwiseNotExpression {
+    pub type_cast_opt: TypeCastOpt,
+    pub unary_expression: Box<UnaryExpression>,
 }
-pub fn cast_expression_unary_expression(
-    _ctx: &Ctx,
-    unary_expression: UnaryExpression,
-) -> CastExpression {
-    CastExpression::UnaryExpression(Box::new(unary_expression))
+#[derive(Debug, Clone)]
+pub struct PlusExpression {
+    pub type_cast_opt: TypeCastOpt,
+    pub unary_expression: Box<UnaryExpression>,
 }
-pub fn cast_expression_c2(
-    _ctx: &Ctx,
-    type_name: TypeName,
-    cast_expression: CastExpression,
-) -> CastExpression {
-    CastExpression::C2(CastExpressionC2 {
-        type_name,
-        cast_expression: Box::new(cast_expression),
-    })
+#[derive(Debug, Clone)]
+pub struct MinusExpression {
+    pub type_cast_opt: TypeCastOpt,
+    pub unary_expression: Box<UnaryExpression>,
+}
+#[derive(Debug, Clone)]
+pub struct DereferenceExpression {
+    pub type_cast_opt: TypeCastOpt,
+    pub unary_expression: Box<UnaryExpression>,
+}
+#[derive(Debug, Clone)]
+pub struct ReferenceExpression {
+    pub type_cast_opt: TypeCastOpt,
+    pub unary_expression: Box<UnaryExpression>,
+}
+#[derive(Debug, Clone)]
+pub struct ArrayAccessExpression {
+    pub assumed_array: Box<UnaryExpression>,
+    pub index: Expression,
+}
+#[derive(Debug, Clone)]
+pub struct FunctionCallExpression {
+    pub assumed_callable: Box<UnaryExpression>,
+    pub arguments: ArgumentExpressionListOpt,
+}
+#[derive(Debug, Clone)]
+pub struct AccessExpression {
+    pub assumed_variable: Box<UnaryExpression>,
+    pub identifier: Identifier,
+}
+#[derive(Debug, Clone)]
+pub struct PointerAccessExpression {
+    pub assumed_pointer: Box<UnaryExpression>,
+    pub identifier: Identifier,
+}
+#[derive(Debug, Clone)]
+pub struct PostIncrementExpression {
+    pub assumed_increment: Box<UnaryExpression>,
+}
+#[derive(Debug, Clone)]
+pub struct PostDecrementExpression {
+    pub assumed_decrement: Box<UnaryExpression>,
+}
+#[derive(Debug, Clone)]
+pub struct CompoundLiteralExpression {
+    pub type_cast: TypeCast,
+    pub initializer_list: InitializerList,
+    pub comma_opt: CommaOpt,
 }
 #[derive(Debug, Clone)]
 pub enum UnaryExpression {
-    PostfixExpression(PostfixExpression),
+    PrimaryExpression(PrimaryExpression),
     PreIncrementExpression(Box<UnaryExpression>),
     PreDecrementExpression(Box<UnaryExpression>),
-    LogicalNotExpression(CastExpression),
-    BitwiseNotExpression(CastExpression),
-    PlusExpression(CastExpression),
-    MinusExpression(CastExpression),
-    DereferenceExpression(CastExpression),
-    ReferenceExpression(CastExpression),
-    SizeOfExpressionExpression(Box<Expression>),
+    LogicalNotExpression(LogicalNotExpression),
+    BitwiseNotExpression(BitwiseNotExpression),
+    PlusExpression(PlusExpression),
+    MinusExpression(MinusExpression),
+    DereferenceExpression(DereferenceExpression),
+    ReferenceExpression(ReferenceExpression),
+    SizeOfExpressionExpression(Expression),
     SizeOfTypenameExpression(TypeName),
+    ArrayAccessExpression(ArrayAccessExpression),
+    FunctionCallExpression(FunctionCallExpression),
+    AccessExpression(AccessExpression),
+    PointerAccessExpression(PointerAccessExpression),
+    PostIncrementExpression(PostIncrementExpression),
+    PostDecrementExpression(PostDecrementExpression),
+    CompoundLiteralExpression(CompoundLiteralExpression),
 }
-pub fn unary_expression_postfix_expression(
+pub fn unary_expression_primary_expression(
     _ctx: &Ctx,
-    postfix_expression: PostfixExpression,
+    primary_expression: PrimaryExpression,
 ) -> UnaryExpression {
-    UnaryExpression::PostfixExpression(postfix_expression)
+    UnaryExpression::PrimaryExpression(primary_expression)
 }
 pub fn unary_expression_pre_increment_expression(
     _ctx: &Ctx,
@@ -1093,45 +1162,69 @@ pub fn unary_expression_pre_decrement_expression(
 }
 pub fn unary_expression_logical_not_expression(
     _ctx: &Ctx,
-    cast_expression: CastExpression,
+    type_cast_opt: TypeCastOpt,
+    unary_expression: UnaryExpression,
 ) -> UnaryExpression {
-    UnaryExpression::LogicalNotExpression(cast_expression)
+    UnaryExpression::LogicalNotExpression(LogicalNotExpression {
+        type_cast_opt,
+        unary_expression: Box::new(unary_expression),
+    })
 }
 pub fn unary_expression_bitwise_not_expression(
     _ctx: &Ctx,
-    cast_expression: CastExpression,
+    type_cast_opt: TypeCastOpt,
+    unary_expression: UnaryExpression,
 ) -> UnaryExpression {
-    UnaryExpression::BitwiseNotExpression(cast_expression)
+    UnaryExpression::BitwiseNotExpression(BitwiseNotExpression {
+        type_cast_opt,
+        unary_expression: Box::new(unary_expression),
+    })
 }
 pub fn unary_expression_plus_expression(
     _ctx: &Ctx,
-    cast_expression: CastExpression,
+    type_cast_opt: TypeCastOpt,
+    unary_expression: UnaryExpression,
 ) -> UnaryExpression {
-    UnaryExpression::PlusExpression(cast_expression)
+    UnaryExpression::PlusExpression(PlusExpression {
+        type_cast_opt,
+        unary_expression: Box::new(unary_expression),
+    })
 }
 pub fn unary_expression_minus_expression(
     _ctx: &Ctx,
-    cast_expression: CastExpression,
+    type_cast_opt: TypeCastOpt,
+    unary_expression: UnaryExpression,
 ) -> UnaryExpression {
-    UnaryExpression::MinusExpression(cast_expression)
+    UnaryExpression::MinusExpression(MinusExpression {
+        type_cast_opt,
+        unary_expression: Box::new(unary_expression),
+    })
 }
 pub fn unary_expression_dereference_expression(
     _ctx: &Ctx,
-    cast_expression: CastExpression,
+    type_cast_opt: TypeCastOpt,
+    unary_expression: UnaryExpression,
 ) -> UnaryExpression {
-    UnaryExpression::DereferenceExpression(cast_expression)
+    UnaryExpression::DereferenceExpression(DereferenceExpression {
+        type_cast_opt,
+        unary_expression: Box::new(unary_expression),
+    })
 }
 pub fn unary_expression_reference_expression(
     _ctx: &Ctx,
-    cast_expression: CastExpression,
+    type_cast_opt: TypeCastOpt,
+    unary_expression: UnaryExpression,
 ) -> UnaryExpression {
-    UnaryExpression::ReferenceExpression(cast_expression)
+    UnaryExpression::ReferenceExpression(ReferenceExpression {
+        type_cast_opt,
+        unary_expression: Box::new(unary_expression),
+    })
 }
 pub fn unary_expression_size_of_expression_expression(
     _ctx: &Ctx,
     expression: Expression,
 ) -> UnaryExpression {
-    UnaryExpression::SizeOfExpressionExpression(Box::new(expression))
+    UnaryExpression::SizeOfExpressionExpression(expression)
 }
 pub fn unary_expression_size_of_typename_expression(
     _ctx: &Ctx,
@@ -1139,125 +1232,80 @@ pub fn unary_expression_size_of_typename_expression(
 ) -> UnaryExpression {
     UnaryExpression::SizeOfTypenameExpression(type_name)
 }
-#[derive(Debug, Clone)]
-pub struct PostfixExpressionC2 {
-    pub postfix_expression: Box<PostfixExpression>,
-    pub expression: Box<Expression>,
-}
-#[derive(Debug, Clone)]
-pub struct PostfixExpressionC3 {
-    pub postfix_expression: Box<PostfixExpression>,
-    pub argument_expression_list_opt: ArgumentExpressionListOpt,
-}
-#[derive(Debug, Clone)]
-pub struct PostfixExpressionC4 {
-    pub postfix_expression: Box<PostfixExpression>,
-    pub identifier: Identifier,
-}
-#[derive(Debug, Clone)]
-pub struct PostfixExpressionC5 {
-    pub postfix_expression: Box<PostfixExpression>,
-    pub identifier: Identifier,
-}
-#[derive(Debug, Clone)]
-pub struct PostfixExpressionC8 {
-    pub type_name: TypeName,
-    pub initializer_list: InitializerList,
-}
-#[derive(Debug, Clone)]
-pub struct PostfixExpressionC9 {
-    pub type_name: TypeName,
-    pub initializer_list: InitializerList,
-}
-#[derive(Debug, Clone)]
-pub enum PostfixExpression {
-    PrimaryExpression(PrimaryExpression),
-    C2(PostfixExpressionC2),
-    C3(PostfixExpressionC3),
-    C4(PostfixExpressionC4),
-    C5(PostfixExpressionC5),
-    PostfixExpression1(Box<PostfixExpression>),
-    PostfixExpression2(Box<PostfixExpression>),
-    C8(PostfixExpressionC8),
-    C9(PostfixExpressionC9),
-}
-pub fn postfix_expression_primary_expression(
+pub fn unary_expression_array_access_expression(
     _ctx: &Ctx,
-    primary_expression: PrimaryExpression,
-) -> PostfixExpression {
-    PostfixExpression::PrimaryExpression(primary_expression)
-}
-pub fn postfix_expression_c2(
-    _ctx: &Ctx,
-    postfix_expression: PostfixExpression,
-    expression: Expression,
-) -> PostfixExpression {
-    PostfixExpression::C2(PostfixExpressionC2 {
-        postfix_expression: Box::new(postfix_expression),
-        expression: Box::new(expression),
+    assumed_array: UnaryExpression,
+    index: Expression,
+) -> UnaryExpression {
+    UnaryExpression::ArrayAccessExpression(ArrayAccessExpression {
+        assumed_array: Box::new(assumed_array),
+        index,
     })
 }
-pub fn postfix_expression_c3(
+pub fn unary_expression_function_call_expression(
     _ctx: &Ctx,
-    postfix_expression: PostfixExpression,
-    argument_expression_list_opt: ArgumentExpressionListOpt,
-) -> PostfixExpression {
-    PostfixExpression::C3(PostfixExpressionC3 {
-        postfix_expression: Box::new(postfix_expression),
-        argument_expression_list_opt,
+    assumed_callable: UnaryExpression,
+    arguments: ArgumentExpressionListOpt,
+) -> UnaryExpression {
+    UnaryExpression::FunctionCallExpression(FunctionCallExpression {
+        assumed_callable: Box::new(assumed_callable),
+        arguments,
     })
 }
-pub fn postfix_expression_c4(
+pub fn unary_expression_access_expression(
     _ctx: &Ctx,
-    postfix_expression: PostfixExpression,
+    assumed_variable: UnaryExpression,
     identifier: Identifier,
-) -> PostfixExpression {
-    PostfixExpression::C4(PostfixExpressionC4 {
-        postfix_expression: Box::new(postfix_expression),
+) -> UnaryExpression {
+    UnaryExpression::AccessExpression(AccessExpression {
+        assumed_variable: Box::new(assumed_variable),
         identifier,
     })
 }
-pub fn postfix_expression_c5(
+pub fn unary_expression_pointer_access_expression(
     _ctx: &Ctx,
-    postfix_expression: PostfixExpression,
+    assumed_pointer: UnaryExpression,
     identifier: Identifier,
-) -> PostfixExpression {
-    PostfixExpression::C5(PostfixExpressionC5 {
-        postfix_expression: Box::new(postfix_expression),
+) -> UnaryExpression {
+    UnaryExpression::PointerAccessExpression(PointerAccessExpression {
+        assumed_pointer: Box::new(assumed_pointer),
         identifier,
     })
 }
-pub fn postfix_expression_postfix_expression1(
+pub fn unary_expression_post_increment_expression(
     _ctx: &Ctx,
-    postfix_expression: PostfixExpression,
-) -> PostfixExpression {
-    PostfixExpression::PostfixExpression1(Box::new(postfix_expression))
-}
-pub fn postfix_expression_postfix_expression2(
-    _ctx: &Ctx,
-    postfix_expression: PostfixExpression,
-) -> PostfixExpression {
-    PostfixExpression::PostfixExpression2(Box::new(postfix_expression))
-}
-pub fn postfix_expression_c8(
-    _ctx: &Ctx,
-    type_name: TypeName,
-    initializer_list: InitializerList,
-) -> PostfixExpression {
-    PostfixExpression::C8(PostfixExpressionC8 {
-        type_name,
-        initializer_list,
+    assumed_increment: UnaryExpression,
+) -> UnaryExpression {
+    UnaryExpression::PostIncrementExpression(PostIncrementExpression {
+        assumed_increment: Box::new(assumed_increment),
     })
 }
-pub fn postfix_expression_c9(
+pub fn unary_expression_post_decrement_expression(
     _ctx: &Ctx,
-    type_name: TypeName,
-    initializer_list: InitializerList,
-) -> PostfixExpression {
-    PostfixExpression::C9(PostfixExpressionC9 {
-        type_name,
-        initializer_list,
+    assumed_decrement: UnaryExpression,
+) -> UnaryExpression {
+    UnaryExpression::PostDecrementExpression(PostDecrementExpression {
+        assumed_decrement: Box::new(assumed_decrement),
     })
+}
+pub fn unary_expression_compound_literal_expression(
+    _ctx: &Ctx,
+    type_cast: TypeCast,
+    initializer_list: InitializerList,
+    comma_opt: CommaOpt,
+) -> UnaryExpression {
+    UnaryExpression::CompoundLiteralExpression(CompoundLiteralExpression {
+        type_cast,
+        initializer_list,
+        comma_opt,
+    })
+}
+pub type TypeCastOpt = Option<TypeCast>;
+pub fn type_cast_opt_type_cast(_ctx: &Ctx, type_cast: TypeCast) -> TypeCastOpt {
+    Some(type_cast)
+}
+pub fn type_cast_opt_empty(_ctx: &Ctx) -> TypeCastOpt {
+    None
 }
 pub type ArgumentExpressionListOpt = Option<ArgumentExpressionList>;
 pub fn argument_expression_list_opt_argument_expression_list(
@@ -1269,11 +1317,23 @@ pub fn argument_expression_list_opt_argument_expression_list(
 pub fn argument_expression_list_opt_empty(_ctx: &Ctx) -> ArgumentExpressionListOpt {
     None
 }
+pub type CommaOpt = Option<CommaOptNoO>;
+#[derive(Debug, Clone)]
+pub enum CommaOptNoO {
+    Comma,
+}
+pub fn comma_opt_comma(_ctx: &Ctx) -> CommaOpt {
+    Some(CommaOptNoO::Comma)
+}
+pub fn comma_opt_empty(_ctx: &Ctx) -> CommaOpt {
+    None
+}
 #[derive(Debug, Clone)]
 pub enum PrimaryExpression {
     Number(Num),
     Identifier(Identifier),
-    Paren(Box<Expression>),
+    StringLiteral(StringLiteral),
+    Paren(Expression),
 }
 pub fn primary_expression_number(_ctx: &Ctx, num: Num) -> PrimaryExpression {
     PrimaryExpression::Number(num)
@@ -1284,58 +1344,17 @@ pub fn primary_expression_identifier(
 ) -> PrimaryExpression {
     PrimaryExpression::Identifier(identifier)
 }
+pub fn primary_expression_string_literal(
+    _ctx: &Ctx,
+    string_literal: StringLiteral,
+) -> PrimaryExpression {
+    PrimaryExpression::StringLiteral(string_literal)
+}
 pub fn primary_expression_paren(
     _ctx: &Ctx,
     expression: Expression,
 ) -> PrimaryExpression {
-    PrimaryExpression::Paren(Box::new(expression))
-}
-#[derive(Debug, Clone)]
-pub struct CommaExpression {
-    pub left: Box<Expression>,
-    pub right: Box<Expression>,
-}
-#[derive(Debug, Clone)]
-pub enum Expression {
-    CommaExpression(CommaExpression),
-    AssignmentExpression(Box<AssignmentExpression>),
-    ConditionalExpression(ConditionalExpression),
-    ArithmeticExpression(ArithmeticExpression),
-    UnaryExpression(UnaryExpression),
-}
-pub fn expression_comma_expression(
-    _ctx: &Ctx,
-    left: Expression,
-    right: Expression,
-) -> Expression {
-    Expression::CommaExpression(CommaExpression {
-        left: Box::new(left),
-        right: Box::new(right),
-    })
-}
-pub fn expression_assignment_expression(
-    _ctx: &Ctx,
-    assignment_expression: AssignmentExpression,
-) -> Expression {
-    Expression::AssignmentExpression(Box::new(assignment_expression))
-}
-pub fn expression_conditional_expression(
-    _ctx: &Ctx,
-    conditional_expression: ConditionalExpression,
-) -> Expression {
-    Expression::ConditionalExpression(conditional_expression)
-}
-pub fn expression_arithmetic_expression(
-    _ctx: &Ctx,
-    arithmetic_expression: ArithmeticExpression,
-) -> Expression {
-    Expression::ArithmeticExpression(arithmetic_expression)
-}
-pub fn expression_unary_expression(
-    _ctx: &Ctx,
-    unary_expression: UnaryExpression,
-) -> Expression {
-    Expression::UnaryExpression(unary_expression)
+    PrimaryExpression::Paren(expression)
 }
 #[derive(Debug, Clone)]
 pub struct ArgumentExpressionListC2 {
@@ -1365,16 +1384,16 @@ pub fn argument_expression_list_c2(
 }
 #[derive(Debug, Clone)]
 pub struct TypeName {
-    pub specifier_qualifier_list: SpecifierQualifierList,
+    pub specifier_qualifier_kind1: SpecifierQualifierKind1,
     pub abstract_declarator_opt: AbstractDeclaratorOpt,
 }
 pub fn type_name_c1(
     _ctx: &Ctx,
-    specifier_qualifier_list: SpecifierQualifierList,
+    specifier_qualifier_kind1: SpecifierQualifierKind1,
     abstract_declarator_opt: AbstractDeclaratorOpt,
 ) -> TypeName {
     TypeName {
-        specifier_qualifier_list,
+        specifier_qualifier_kind1,
         abstract_declarator_opt,
     }
 }
@@ -1414,19 +1433,19 @@ pub fn abstract_declarator_c2(
 #[derive(Debug, Clone)]
 pub struct DirectAbstractDeclaratorC2 {
     pub direct_abstract_declarator_opt: DirectAbstractDeclaratorOpt,
-    pub type_qualifier_list_opt: TypeQualifierListOpt,
+    pub type_qualifier0: TypeQualifier0,
     pub assignment_expression_opt: Box<AssignmentExpressionOpt>,
 }
 #[derive(Debug, Clone)]
 pub struct DirectAbstractDeclaratorC3 {
     pub direct_abstract_declarator_opt: DirectAbstractDeclaratorOpt,
-    pub type_qualifier_list_opt: TypeQualifierListOpt,
+    pub type_qualifier0: TypeQualifier0,
     pub assignment_expression: Box<AssignmentExpression>,
 }
 #[derive(Debug, Clone)]
 pub struct DirectAbstractDeclaratorC4 {
     pub direct_abstract_declarator_opt: DirectAbstractDeclaratorOpt,
-    pub type_qualifier_list: TypeQualifierList,
+    pub type_qualifier1: TypeQualifier1,
     pub assignment_expression: Box<AssignmentExpression>,
 }
 #[derive(Debug, Clone)]
@@ -1452,36 +1471,36 @@ pub fn direct_abstract_declarator_abstract_declarator(
 pub fn direct_abstract_declarator_c2(
     _ctx: &Ctx,
     direct_abstract_declarator_opt: DirectAbstractDeclaratorOpt,
-    type_qualifier_list_opt: TypeQualifierListOpt,
+    type_qualifier0: TypeQualifier0,
     assignment_expression_opt: AssignmentExpressionOpt,
 ) -> DirectAbstractDeclarator {
     DirectAbstractDeclarator::C2(DirectAbstractDeclaratorC2 {
         direct_abstract_declarator_opt,
-        type_qualifier_list_opt,
+        type_qualifier0,
         assignment_expression_opt: Box::new(assignment_expression_opt),
     })
 }
 pub fn direct_abstract_declarator_c3(
     _ctx: &Ctx,
     direct_abstract_declarator_opt: DirectAbstractDeclaratorOpt,
-    type_qualifier_list_opt: TypeQualifierListOpt,
+    type_qualifier0: TypeQualifier0,
     assignment_expression: AssignmentExpression,
 ) -> DirectAbstractDeclarator {
     DirectAbstractDeclarator::C3(DirectAbstractDeclaratorC3 {
         direct_abstract_declarator_opt,
-        type_qualifier_list_opt,
+        type_qualifier0,
         assignment_expression: Box::new(assignment_expression),
     })
 }
 pub fn direct_abstract_declarator_c4(
     _ctx: &Ctx,
     direct_abstract_declarator_opt: DirectAbstractDeclaratorOpt,
-    type_qualifier_list: TypeQualifierList,
+    type_qualifier1: TypeQualifier1,
     assignment_expression: AssignmentExpression,
 ) -> DirectAbstractDeclarator {
     DirectAbstractDeclarator::C4(DirectAbstractDeclaratorC4 {
         direct_abstract_declarator_opt,
-        type_qualifier_list,
+        type_qualifier1,
         assignment_expression: Box::new(assignment_expression),
     })
 }
@@ -1565,39 +1584,36 @@ pub fn parameter_list_c2(
     })
 }
 #[derive(Debug, Clone)]
-pub struct ParameterDeclarationC1 {
-    pub declaration_specifiers: Box<DeclarationSpecifiers>,
-    pub declarator: Box<Declarator>,
+pub enum ParameterDeclarationKind {
+    Declarator(Box<Declarator>),
+    AbstractDeclaratorOpt(Box<AbstractDeclaratorOpt>),
+}
+pub fn parameter_declaration_kind_declarator(
+    _ctx: &Ctx,
+    declarator: Declarator,
+) -> ParameterDeclarationKind {
+    ParameterDeclarationKind::Declarator(Box::new(declarator))
+}
+pub fn parameter_declaration_kind_abstract_declarator_opt(
+    _ctx: &Ctx,
+    abstract_declarator_opt: AbstractDeclaratorOpt,
+) -> ParameterDeclarationKind {
+    ParameterDeclarationKind::AbstractDeclaratorOpt(Box::new(abstract_declarator_opt))
 }
 #[derive(Debug, Clone)]
-pub struct ParameterDeclarationC2 {
-    pub declaration_specifiers: Box<DeclarationSpecifiers>,
-    pub abstract_declarator_opt: Box<AbstractDeclaratorOpt>,
-}
-#[derive(Debug, Clone)]
-pub enum ParameterDeclaration {
-    C1(ParameterDeclarationC1),
-    C2(ParameterDeclarationC2),
+pub struct ParameterDeclaration {
+    pub declaration_specifier1: Box<DeclarationSpecifier1>,
+    pub kind: ParameterDeclarationKind,
 }
 pub fn parameter_declaration_c1(
     _ctx: &Ctx,
-    declaration_specifiers: DeclarationSpecifiers,
-    declarator: Declarator,
+    declaration_specifier1: DeclarationSpecifier1,
+    kind: ParameterDeclarationKind,
 ) -> ParameterDeclaration {
-    ParameterDeclaration::C1(ParameterDeclarationC1 {
-        declaration_specifiers: Box::new(declaration_specifiers),
-        declarator: Box::new(declarator),
-    })
-}
-pub fn parameter_declaration_c2(
-    _ctx: &Ctx,
-    declaration_specifiers: DeclarationSpecifiers,
-    abstract_declarator_opt: AbstractDeclaratorOpt,
-) -> ParameterDeclaration {
-    ParameterDeclaration::C2(ParameterDeclarationC2 {
-        declaration_specifiers: Box::new(declaration_specifiers),
-        abstract_declarator_opt: Box::new(abstract_declarator_opt),
-    })
+    ParameterDeclaration {
+        declaration_specifier1: Box::new(declaration_specifier1),
+        kind,
+    }
 }
 #[derive(Debug, Clone)]
 pub struct InitializerListC1 {
@@ -1647,35 +1663,21 @@ pub fn designation_opt_designation(
 pub fn designation_opt_empty(_ctx: &Ctx) -> DesignationOpt {
     None
 }
-pub type Designation = DesignatorList;
-pub fn designation_designator_list(
+pub type Designation = Designator1;
+pub fn designation_designator1(_ctx: &Ctx, designator1: Designator1) -> Designation {
+    designator1
+}
+pub type Designator1 = Vec<Designator>;
+pub fn designator1_c1(
     _ctx: &Ctx,
-    designator_list: DesignatorList,
-) -> Designation {
-    designator_list
-}
-#[derive(Debug, Clone)]
-pub struct DesignatorListC2 {
-    pub designator_list: Box<DesignatorList>,
-    pub designator: Designator,
-}
-#[derive(Debug, Clone)]
-pub enum DesignatorList {
-    Designator(Designator),
-    C2(DesignatorListC2),
-}
-pub fn designator_list_designator(_ctx: &Ctx, designator: Designator) -> DesignatorList {
-    DesignatorList::Designator(designator)
-}
-pub fn designator_list_c2(
-    _ctx: &Ctx,
-    designator_list: DesignatorList,
+    mut designator1: Designator1,
     designator: Designator,
-) -> DesignatorList {
-    DesignatorList::C2(DesignatorListC2 {
-        designator_list: Box::new(designator_list),
-        designator,
-    })
+) -> Designator1 {
+    designator1.push(designator);
+    designator1
+}
+pub fn designator1_designator(_ctx: &Ctx, designator: Designator) -> Designator1 {
+    vec![designator]
 }
 #[derive(Debug, Clone)]
 pub enum Designator {
@@ -1691,12 +1693,12 @@ pub fn designator_constant_expression(
 pub fn designator_identifier(_ctx: &Ctx, identifier: Identifier) -> Designator {
     Designator::Identifier(identifier)
 }
-pub type ConstantExpression = ConditionalExpression;
+pub type ConstantExpression = Box<ConditionalExpression>;
 pub fn constant_expression_conditional_expression(
     _ctx: &Ctx,
     conditional_expression: ConditionalExpression,
 ) -> ConstantExpression {
-    conditional_expression
+    Box::new(conditional_expression)
 }
 #[derive(Debug, Clone)]
 pub struct InitializerC2 {
@@ -1723,17 +1725,6 @@ pub fn initializer_c2(
         initializer_list: Box::new(initializer_list),
         comma_opt,
     })
-}
-pub type CommaOpt = Option<CommaOptNoO>;
-#[derive(Debug, Clone)]
-pub enum CommaOptNoO {
-    Comma,
-}
-pub fn comma_opt_comma(_ctx: &Ctx) -> CommaOpt {
-    Some(CommaOptNoO::Comma)
-}
-pub fn comma_opt_empty(_ctx: &Ctx) -> CommaOpt {
-    None
 }
 #[derive(Debug, Clone)]
 pub struct IdentifierListC2 {
@@ -1852,43 +1843,17 @@ pub fn function_specifier_inline(_ctx: &Ctx) -> FunctionSpecifier {
     FunctionSpecifier::Inline
 }
 #[derive(Debug, Clone)]
-pub struct DeclarationListC2 {
-    pub declaration_list: Box<DeclarationList>,
-    pub declaration: Declaration,
-}
-#[derive(Debug, Clone)]
-pub enum DeclarationList {
-    Declaration(Declaration),
-    C2(DeclarationListC2),
-}
-pub fn declaration_list_declaration(
-    _ctx: &Ctx,
-    declaration: Declaration,
-) -> DeclarationList {
-    DeclarationList::Declaration(declaration)
-}
-pub fn declaration_list_c2(
-    _ctx: &Ctx,
-    declaration_list: DeclarationList,
-    declaration: Declaration,
-) -> DeclarationList {
-    DeclarationList::C2(DeclarationListC2 {
-        declaration_list: Box::new(declaration_list),
-        declaration,
-    })
-}
-#[derive(Debug, Clone)]
 pub struct Declaration {
-    pub declaration_specifiers: DeclarationSpecifiers,
+    pub declaration_specifier1: DeclarationSpecifier1,
     pub init_declarator_list_opt: InitDeclaratorListOpt,
 }
 pub fn declaration_c1(
     _ctx: &Ctx,
-    declaration_specifiers: DeclarationSpecifiers,
+    declaration_specifier1: DeclarationSpecifier1,
     init_declarator_list_opt: InitDeclaratorListOpt,
 ) -> Declaration {
     Declaration {
-        declaration_specifiers,
+        declaration_specifier1,
         init_declarator_list_opt,
     }
 }
@@ -1951,45 +1916,31 @@ pub fn init_declarator_c2(
         initializer,
     })
 }
-pub type CompoundStatement = BlockItemListOpt;
-pub fn compound_statement_block_item_list_opt(
-    _ctx: &Ctx,
-    block_item_list_opt: BlockItemListOpt,
-) -> CompoundStatement {
-    block_item_list_opt
-}
-pub type BlockItemListOpt = Option<BlockItemList>;
-pub fn block_item_list_opt_block_item_list(
-    _ctx: &Ctx,
-    block_item_list: BlockItemList,
-) -> BlockItemListOpt {
-    Some(block_item_list)
-}
-pub fn block_item_list_opt_empty(_ctx: &Ctx) -> BlockItemListOpt {
-    None
-}
 #[derive(Debug, Clone)]
-pub struct BlockItemListC2 {
-    pub block_item_list: Box<BlockItemList>,
-    pub block_item: BlockItem,
+pub struct CompoundStatement {
+    pub statements: BlockItem0,
 }
-#[derive(Debug, Clone)]
-pub enum BlockItemList {
-    BlockItem(BlockItem),
-    C2(BlockItemListC2),
+pub fn compound_statement_c1(_ctx: &Ctx, statements: BlockItem0) -> CompoundStatement {
+    CompoundStatement { statements }
 }
-pub fn block_item_list_block_item(_ctx: &Ctx, block_item: BlockItem) -> BlockItemList {
-    BlockItemList::BlockItem(block_item)
-}
-pub fn block_item_list_c2(
+pub type BlockItem1 = Vec<BlockItem>;
+pub fn block_item1_c1(
     _ctx: &Ctx,
-    block_item_list: BlockItemList,
+    mut block_item1: BlockItem1,
     block_item: BlockItem,
-) -> BlockItemList {
-    BlockItemList::C2(BlockItemListC2 {
-        block_item_list: Box::new(block_item_list),
-        block_item,
-    })
+) -> BlockItem1 {
+    block_item1.push(block_item);
+    block_item1
+}
+pub fn block_item1_block_item(_ctx: &Ctx, block_item: BlockItem) -> BlockItem1 {
+    vec![block_item]
+}
+pub type BlockItem0 = Option<BlockItem1>;
+pub fn block_item0_block_item1(_ctx: &Ctx, block_item1: BlockItem1) -> BlockItem0 {
+    Some(block_item1)
+}
+pub fn block_item0_empty(_ctx: &Ctx) -> BlockItem0 {
+    None
 }
 #[derive(Debug, Clone)]
 pub enum BlockItem {
@@ -2003,19 +1954,106 @@ pub fn block_item_statement(_ctx: &Ctx, statement: Statement) -> BlockItem {
     BlockItem::Statement(statement)
 }
 #[derive(Debug, Clone)]
+pub struct LabelStatement {
+    pub label: Identifier,
+    pub body: Box<Statement>,
+}
+#[derive(Debug, Clone)]
+pub struct CaseClause {
+    pub condition: ConstantExpression,
+    pub body: Box<Statement>,
+}
+#[derive(Debug, Clone)]
+pub struct DefaultClause {
+    pub body: Box<Statement>,
+}
+#[derive(Debug, Clone)]
+pub struct ExpressionStatement {
+    pub expression: ExpressionOpt,
+}
+#[derive(Debug, Clone)]
+pub struct IfStatement {
+    pub condition: Expression,
+    pub body: Box<Statement>,
+}
+#[derive(Debug, Clone)]
+pub struct IfElseStatement {
+    pub condition: Expression,
+    pub branch_true: Box<Statement>,
+    pub branch_false: Box<Statement>,
+}
+#[derive(Debug, Clone)]
+pub struct SwitchStatement {
+    pub condition: Expression,
+    pub body: Box<Statement>,
+}
+#[derive(Debug, Clone)]
+pub struct WhileStatement {
+    pub condition: Expression,
+    pub body: Box<Statement>,
+}
+#[derive(Debug, Clone)]
+pub struct DoWhileStatement {
+    pub body: Box<Statement>,
+    pub condition: Expression,
+}
+#[derive(Debug, Clone)]
+pub struct ForStatement {
+    pub init: ForInitClause,
+    pub condition: ExpressionOpt,
+    pub step: ExpressionOpt,
+    pub body: Box<Statement>,
+}
+#[derive(Debug, Clone)]
+pub struct GotoStatement {
+    pub label: Identifier,
+}
+#[derive(Debug, Clone)]
+pub struct ReturnStatement {
+    pub value: ExpressionOpt,
+}
+#[derive(Debug, Clone)]
 pub enum Statement {
-    LabeledStatement(LabeledStatement),
+    LabelStatement(LabelStatement),
+    CaseClause(CaseClause),
+    DefaultClause(DefaultClause),
     CompoundStatement(Box<CompoundStatement>),
     ExpressionStatement(ExpressionStatement),
-    SelectionStatement(SelectionStatement),
-    IterationStatement(IterationStatement),
-    JumpStatement(JumpStatement),
+    IfStatement(IfStatement),
+    IfElseStatement(IfElseStatement),
+    SwitchStatement(SwitchStatement),
+    WhileStatement(WhileStatement),
+    DoWhileStatement(DoWhileStatement),
+    ForStatement(ForStatement),
+    GotoStatement(GotoStatement),
+    ContinueStatement,
+    BreakStatement,
+    ReturnStatement(ReturnStatement),
 }
-pub fn statement_labeled_statement(
+pub fn statement_label_statement(
     _ctx: &Ctx,
-    labeled_statement: LabeledStatement,
+    label: Identifier,
+    body: Statement,
 ) -> Statement {
-    Statement::LabeledStatement(labeled_statement)
+    Statement::LabelStatement(LabelStatement {
+        label,
+        body: Box::new(body),
+    })
+}
+pub fn statement_case_clause(
+    _ctx: &Ctx,
+    condition: ConstantExpression,
+    body: Statement,
+) -> Statement {
+    Statement::CaseClause(CaseClause {
+        condition,
+        body: Box::new(body),
+    })
+}
+pub fn statement_default_clause(_ctx: &Ctx, body: Statement) -> Statement {
+    Statement::DefaultClause(DefaultClause {
+        body: Box::new(body),
+    })
 }
 pub fn statement_compound_statement(
     _ctx: &Ctx,
@@ -2025,73 +2063,87 @@ pub fn statement_compound_statement(
 }
 pub fn statement_expression_statement(
     _ctx: &Ctx,
-    expression_statement: ExpressionStatement,
+    expression: ExpressionOpt,
 ) -> Statement {
-    Statement::ExpressionStatement(expression_statement)
+    Statement::ExpressionStatement(ExpressionStatement { expression })
 }
-pub fn statement_selection_statement(
+pub fn statement_if_statement(
     _ctx: &Ctx,
-    selection_statement: SelectionStatement,
+    condition: Expression,
+    body: Statement,
 ) -> Statement {
-    Statement::SelectionStatement(selection_statement)
-}
-pub fn statement_iteration_statement(
-    _ctx: &Ctx,
-    iteration_statement: IterationStatement,
-) -> Statement {
-    Statement::IterationStatement(iteration_statement)
-}
-pub fn statement_jump_statement(_ctx: &Ctx, jump_statement: JumpStatement) -> Statement {
-    Statement::JumpStatement(jump_statement)
-}
-#[derive(Debug, Clone)]
-pub struct LabeledStatementC1 {
-    pub identifier: Identifier,
-    pub statement: Box<Statement>,
-}
-#[derive(Debug, Clone)]
-pub struct LabeledStatementC2 {
-    pub constant_expression: ConstantExpression,
-    pub statement: Box<Statement>,
-}
-#[derive(Debug, Clone)]
-pub enum LabeledStatement {
-    C1(LabeledStatementC1),
-    C2(LabeledStatementC2),
-    Statement(Box<Statement>),
-}
-pub fn labeled_statement_c1(
-    _ctx: &Ctx,
-    identifier: Identifier,
-    statement: Statement,
-) -> LabeledStatement {
-    LabeledStatement::C1(LabeledStatementC1 {
-        identifier,
-        statement: Box::new(statement),
+    Statement::IfStatement(IfStatement {
+        condition,
+        body: Box::new(body),
     })
 }
-pub fn labeled_statement_c2(
+pub fn statement_if_else_statement(
     _ctx: &Ctx,
-    constant_expression: ConstantExpression,
-    statement: Statement,
-) -> LabeledStatement {
-    LabeledStatement::C2(LabeledStatementC2 {
-        constant_expression,
-        statement: Box::new(statement),
+    condition: Expression,
+    branch_true: Statement,
+    branch_false: Statement,
+) -> Statement {
+    Statement::IfElseStatement(IfElseStatement {
+        condition,
+        branch_true: Box::new(branch_true),
+        branch_false: Box::new(branch_false),
     })
 }
-pub fn labeled_statement_statement(
+pub fn statement_switch_statement(
     _ctx: &Ctx,
-    statement: Statement,
-) -> LabeledStatement {
-    LabeledStatement::Statement(Box::new(statement))
+    condition: Expression,
+    body: Statement,
+) -> Statement {
+    Statement::SwitchStatement(SwitchStatement {
+        condition,
+        body: Box::new(body),
+    })
 }
-pub type ExpressionStatement = ExpressionOpt;
-pub fn expression_statement_expression_opt(
+pub fn statement_while_statement(
     _ctx: &Ctx,
-    expression_opt: ExpressionOpt,
-) -> ExpressionStatement {
-    expression_opt
+    condition: Expression,
+    body: Statement,
+) -> Statement {
+    Statement::WhileStatement(WhileStatement {
+        condition,
+        body: Box::new(body),
+    })
+}
+pub fn statement_do_while_statement(
+    _ctx: &Ctx,
+    body: Statement,
+    condition: Expression,
+) -> Statement {
+    Statement::DoWhileStatement(DoWhileStatement {
+        body: Box::new(body),
+        condition,
+    })
+}
+pub fn statement_for_statement(
+    _ctx: &Ctx,
+    init: ForInitClause,
+    condition: ExpressionOpt,
+    step: ExpressionOpt,
+    body: Statement,
+) -> Statement {
+    Statement::ForStatement(ForStatement {
+        init,
+        condition,
+        step,
+        body: Box::new(body),
+    })
+}
+pub fn statement_goto_statement(_ctx: &Ctx, label: Identifier) -> Statement {
+    Statement::GotoStatement(GotoStatement { label })
+}
+pub fn statement_continue_statement(_ctx: &Ctx) -> Statement {
+    Statement::ContinueStatement
+}
+pub fn statement_break_statement(_ctx: &Ctx) -> Statement {
+    Statement::BreakStatement
+}
+pub fn statement_return_statement(_ctx: &Ctx, value: ExpressionOpt) -> Statement {
+    Statement::ReturnStatement(ReturnStatement { value })
 }
 pub type ExpressionOpt = Option<Expression>;
 pub fn expression_opt_expression(_ctx: &Ctx, expression: Expression) -> ExpressionOpt {
@@ -2101,157 +2153,23 @@ pub fn expression_opt_empty(_ctx: &Ctx) -> ExpressionOpt {
     None
 }
 #[derive(Debug, Clone)]
-pub struct SelectionStatementC1 {
-    pub expression: Expression,
-    pub statement: Box<Statement>,
+pub enum ForInitClause {
+    None,
+    ForInitWithExpression(Expression),
+    ForInitWithDeclaration(Declaration),
 }
-#[derive(Debug, Clone)]
-pub struct SelectionStatementC2 {
-    pub expression: Expression,
-    pub statement_5: Box<Statement>,
-    pub statement_7: Box<Statement>,
+pub fn for_init_clause_none(_ctx: &Ctx) -> ForInitClause {
+    ForInitClause::None
 }
-#[derive(Debug, Clone)]
-pub struct SelectionStatementC3 {
-    pub expression: Expression,
-    pub statement: Box<Statement>,
-}
-#[derive(Debug, Clone)]
-pub enum SelectionStatement {
-    C1(SelectionStatementC1),
-    C2(SelectionStatementC2),
-    C3(SelectionStatementC3),
-}
-pub fn selection_statement_c1(
+pub fn for_init_clause_for_init_with_expression(
     _ctx: &Ctx,
     expression: Expression,
-    statement: Statement,
-) -> SelectionStatement {
-    SelectionStatement::C1(SelectionStatementC1 {
-        expression,
-        statement: Box::new(statement),
-    })
+) -> ForInitClause {
+    ForInitClause::ForInitWithExpression(expression)
 }
-pub fn selection_statement_c2(
-    _ctx: &Ctx,
-    expression: Expression,
-    statement_5: Statement,
-    statement_7: Statement,
-) -> SelectionStatement {
-    SelectionStatement::C2(SelectionStatementC2 {
-        expression,
-        statement_5: Box::new(statement_5),
-        statement_7: Box::new(statement_7),
-    })
-}
-pub fn selection_statement_c3(
-    _ctx: &Ctx,
-    expression: Expression,
-    statement: Statement,
-) -> SelectionStatement {
-    SelectionStatement::C3(SelectionStatementC3 {
-        expression,
-        statement: Box::new(statement),
-    })
-}
-#[derive(Debug, Clone)]
-pub struct IterationStatementC1 {
-    pub expression: Expression,
-    pub statement: Box<Statement>,
-}
-#[derive(Debug, Clone)]
-pub struct IterationStatementC2 {
-    pub statement: Box<Statement>,
-    pub expression: Expression,
-}
-#[derive(Debug, Clone)]
-pub struct IterationStatementC3 {
-    pub expression_opt_3: ExpressionOpt,
-    pub expression_opt_5: ExpressionOpt,
-    pub expression_opt_7: ExpressionOpt,
-    pub statement: Box<Statement>,
-}
-#[derive(Debug, Clone)]
-pub struct IterationStatementC4 {
-    pub declaration: Declaration,
-    pub expression_opt_4: ExpressionOpt,
-    pub expression_opt_6: ExpressionOpt,
-    pub statement: Box<Statement>,
-}
-#[derive(Debug, Clone)]
-pub enum IterationStatement {
-    C1(IterationStatementC1),
-    C2(IterationStatementC2),
-    C3(IterationStatementC3),
-    C4(IterationStatementC4),
-}
-pub fn iteration_statement_c1(
-    _ctx: &Ctx,
-    expression: Expression,
-    statement: Statement,
-) -> IterationStatement {
-    IterationStatement::C1(IterationStatementC1 {
-        expression,
-        statement: Box::new(statement),
-    })
-}
-pub fn iteration_statement_c2(
-    _ctx: &Ctx,
-    statement: Statement,
-    expression: Expression,
-) -> IterationStatement {
-    IterationStatement::C2(IterationStatementC2 {
-        statement: Box::new(statement),
-        expression,
-    })
-}
-pub fn iteration_statement_c3(
-    _ctx: &Ctx,
-    expression_opt_3: ExpressionOpt,
-    expression_opt_5: ExpressionOpt,
-    expression_opt_7: ExpressionOpt,
-    statement: Statement,
-) -> IterationStatement {
-    IterationStatement::C3(IterationStatementC3 {
-        expression_opt_3,
-        expression_opt_5,
-        expression_opt_7,
-        statement: Box::new(statement),
-    })
-}
-pub fn iteration_statement_c4(
+pub fn for_init_clause_for_init_with_declaration(
     _ctx: &Ctx,
     declaration: Declaration,
-    expression_opt_4: ExpressionOpt,
-    expression_opt_6: ExpressionOpt,
-    statement: Statement,
-) -> IterationStatement {
-    IterationStatement::C4(IterationStatementC4 {
-        declaration,
-        expression_opt_4,
-        expression_opt_6,
-        statement: Box::new(statement),
-    })
-}
-#[derive(Debug, Clone)]
-pub enum JumpStatement {
-    Identifier(Identifier),
-    C2,
-    C3,
-    ExpressionOpt(ExpressionOpt),
-}
-pub fn jump_statement_identifier(_ctx: &Ctx, identifier: Identifier) -> JumpStatement {
-    JumpStatement::Identifier(identifier)
-}
-pub fn jump_statement_c2(_ctx: &Ctx) -> JumpStatement {
-    JumpStatement::C2
-}
-pub fn jump_statement_c3(_ctx: &Ctx) -> JumpStatement {
-    JumpStatement::C3
-}
-pub fn jump_statement_expression_opt(
-    _ctx: &Ctx,
-    expression_opt: ExpressionOpt,
-) -> JumpStatement {
-    JumpStatement::ExpressionOpt(expression_opt)
+) -> ForInitClause {
+    ForInitClause::ForInitWithDeclaration(declaration)
 }
