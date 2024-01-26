@@ -1,4 +1,6 @@
-fn main() -> anyhow::Result<()> {
+use miette::miette;
+
+fn main() -> miette::Result<()> {
     let mut settings = rustemo_compiler::Settings::new()
         .in_source_tree()
         .force(true)
@@ -9,6 +11,6 @@ fn main() -> anyhow::Result<()> {
         settings = settings.generator_table_type(rustemo_compiler::GeneratorTableType::Arrays);
     }
 
-    settings.process_dir().map_err(|x| anyhow::anyhow!(x))?;
+    settings.process_dir().map_err(|e| miette!("generation error: {}", e))?;
     Ok(())
 }
